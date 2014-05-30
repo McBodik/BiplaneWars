@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -26,11 +25,14 @@ public class BattlefieldScreen implements Screen {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		plane.update();
 		world.step(1 / 60f, 8, 3);
 		renderer.render(world, camera.combined);
 		
-		plane.plane.setLinearVelocity(plane.plane.getLinearVelocity().x, plane.plane.getLinearVelocity().x * 0.1f);
-		System.out.println(plane.plane.getLinearVelocity().y);
+
+		if(plane.join.isMotorEnabled() && plane.plane.getLinearVelocity().x > 5){
+			plane.plane.setLinearVelocity(new Vector2(plane.plane.getLinearVelocity().x, Math.abs(plane.plane.getLinearVelocity().x*0.1f)));
+		}
 	}
 
 	@Override
@@ -58,8 +60,8 @@ public class BattlefieldScreen implements Screen {
 		fd.friction = 0.5f;
 		
 		world.createBody(ground).createFixture(fd);
-		
-		plane = new Plane(world);
+	
+		Gdx.input.setInputProcessor(plane = new Plane(world));
 	}
 
 	@Override
