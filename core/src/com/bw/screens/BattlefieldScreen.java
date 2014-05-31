@@ -11,14 +11,15 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.bw.actors.Plane;
+import com.bw.actors.plane.PlaneActor;
+import com.bw.actors.plane.types.General;
 
 public class BattlefieldScreen implements Screen {
 
 	World world;
 	Box2DDebugRenderer renderer;
 	OrthographicCamera camera;
-	Plane plane;
+	PlaneActor plane;
 
 	@Override
 	public void render(float delta) {
@@ -28,11 +29,6 @@ public class BattlefieldScreen implements Screen {
 		plane.update();
 		world.step(1 / 60f, 8, 3);
 		renderer.render(world, camera.combined);
-		
-
-		if(plane.join.isMotorEnabled() && plane.plane.getLinearVelocity().x > 5){
-			plane.plane.setLinearVelocity(new Vector2(plane.plane.getLinearVelocity().x, Math.abs(plane.plane.getLinearVelocity().x*0.1f)));
-		}
 	}
 
 	@Override
@@ -49,8 +45,17 @@ public class BattlefieldScreen implements Screen {
 		camera = new OrthographicCamera();
 
 		ChainShape rectangle = new ChainShape();
-		rectangle.createChain(new Vector2[]{new Vector2(-100, -15), new Vector2(100, -15)}); 
-		
+		rectangle.createChain(new Vector2[] {
+
+				new Vector2(-Gdx.graphics.getWidth() / 20f, Gdx.graphics
+						.getHeight() / 20f),
+				new Vector2(-Gdx.graphics.getWidth() / 20f, -23),
+				new Vector2(Gdx.graphics.getWidth() / 20f, -23),
+				new Vector2(Gdx.graphics.getWidth() / 20f, Gdx.graphics
+						.getHeight() / 20f - 5),
+				new Vector2(-Gdx.graphics.getWidth() / 20f, Gdx.graphics
+						.getHeight() / 20f - 5) });
+
 		BodyDef ground = new BodyDef();
 		ground.type = BodyType.StaticBody;
 		ground.position.set(0, 0);
@@ -58,10 +63,11 @@ public class BattlefieldScreen implements Screen {
 		fd.shape = rectangle;
 		fd.restitution = 0f;
 		fd.friction = 0.5f;
-		
+
 		world.createBody(ground).createFixture(fd);
-	
-		Gdx.input.setInputProcessor(plane = new Plane(world));
+
+		plane = new PlaneActor(world, new General());
+		Gdx.input.setInputProcessor(plane.getPlaneController());
 	}
 
 	@Override

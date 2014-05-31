@@ -1,27 +1,24 @@
-package com.bw.actors;
+package com.bw.actors.plane;
 
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
+import com.bw.actors.plane.types.PlaneType;
 
-public class Plane extends InputAdapter {
+public class PlaneActor {
 
 	public Body plane, frontWheel, backWheel;
-	public WheelJoint join;
-	private boolean isFlight = false;
+	private PlaneController planeController;
 
-	public Plane(World world) {
+	public PlaneActor(World world, PlaneType planeType) {
+		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(new Vector2(-20, -13));
@@ -32,18 +29,13 @@ public class Plane extends InputAdapter {
 		planeCabin.setAsBox(3f, 0.7f);
 
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = 1f;
+		fixtureDef.density = 20f;
 		fixtureDef.friction = 0.5f;
 		fixtureDef.restitution = 0f;
 		fixtureDef.shape = planeCabin;
 
 		plane = world.createBody(bodyDef);
 		plane.createFixture(fixtureDef);
-
-		MassData md = plane.getMassData();
-		//md.center.x = -0.5f;
-
-		plane.setMassData(md);
 
 		CircleShape wheel = new CircleShape();
 		wheel.setRadius(0.25f);
@@ -53,7 +45,7 @@ public class Plane extends InputAdapter {
 		frontWheel = world.createBody(bodyDef);
 		frontWheel.createFixture(fixtureDef);
 
-		//wheel.setRadius(0.15f);
+		wheel.setRadius(0.15f);
 		backWheel = world.createBody(bodyDef);
 		backWheel.createFixture(fixtureDef);
 
@@ -76,58 +68,17 @@ public class Plane extends InputAdapter {
 		wheelDef.localAxisA.set(Vector2.Y);
 		wheelDef.frequencyHz = 10;
 
-		join = (WheelJoint) world.createJoint(wheelDef);
-
+		WheelJoint joint = (WheelJoint) world.createJoint(wheelDef);
+		plane.setAngularDamping(1f);
+		
+		planeController = new PlaneController(plane, joint, planeType); 
 	}
-
-	Vector2 tmp = new Vector2(), tmp2 = new Vector2();
-	private float acc = 20, leftAcc, rightAcc;
+	
+	public PlaneController getPlaneController(){
+		return planeController;
+	}
 
 	public void update() {
-		float rot = (float) (plane.getTransform().getRotation() + Math.PI / 2);
-		float x = MathUtils.cos(rot);
-		float y = MathUtils.sin(rot);
-
-		plane.applyForce(tmp.set(leftAcc * x, leftAcc * y), plane.getWorldPoint(tmp2.set(-3, 0)), true);
-		plane.applyForce(tmp.set(rightAcc * x, rightAcc * y), plane.getWorldPoint(tmp2.set(3, 0)), true);
+		planeController.updateMooving();
 	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		switch (keycode) {
-		case Keys.W:
-			if (isFlight)
-				rightAcc = acc;
-			else{
-				join.enableMotor(true);
-				isFlight = true;
-			}
-			break;
-		case Keys.S:
-			if (isFlight)
-				rightAcc = -acc;
-			else{
-				join.enableMotor(true);
-				isFlight = true;
-			}
-			break;
-
-		default:
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		if (keycode == Keys.Q || keycode == Keys.A)
-			leftAcc = 0;
-		else if (keycode == Keys.E || keycode == Keys.D)
-			rightAcc = 0;
-		else if (keycode == Keys.W || keycode == Keys.S) {
-		} else
-			return false;
-		return true;
-	}
-
 }
