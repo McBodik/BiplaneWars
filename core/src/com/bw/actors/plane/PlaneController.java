@@ -1,51 +1,53 @@
 package com.bw.actors.plane;
 
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
-import com.badlogic.gdx.InputProcessor;
 import com.bw.actors.plane.types.PlaneType;
 
 public class PlaneController implements InputProcessor {
+
 	private Body plane;
 	private float controllForce;
 	private float currentControllForce = 0;
 	private float speed;
-	private float motorSpeed;
 	private boolean isFlying = false;
 	private float angularDamping = 1;
 	private boolean isMotorEnable = false;
 	private Vector2 pointForFoce = new Vector2(2.5f, 0);
 	private Vector2 forceVector = new Vector2();
 	private Vector2 speedVector = new Vector2();
-	public WheelJoint joint;
+	private WheelJoint joint;
+	
+	public boolean shoot = false;
 
 	public PlaneController(Body plane, WheelJoint joint, PlaneType planeType) {
 		this.plane = plane;
 		this.joint = joint;
 		this.controllForce = planeType.getControllForce();
 		this.speed = planeType.getSpeed();
-		this.motorSpeed = planeType.getMotorSpeed();
 		this.currentControllForce = planeType.getControllForce();
 	}
-
+	
+	private float temp = 0;
 	public void updateMooving() {
 		if (isFlying) {
 			plane.setAngularDamping(angularDamping);
-			plane.applyForce(getCotrollForceVector(),
-					plane.getWorldPoint(pointForFoce), true);
+			plane.applyForce(getCotrollForceVector(), plane.getWorldPoint(pointForFoce), true);
 			plane.setLinearVelocity(getSpeedVector());
 		} else if (isMotorEnable) {
 			if (!joint.isMotorEnabled()) {
 				joint.enableMotor(true);
-				joint.setMaxMotorTorque(motorSpeed);
-				joint.setMotorSpeed(-motorSpeed);
+				temp = plane.getPosition().y;
 			}
-			plane.setLinearVelocity(plane.getLinearVelocity().x,
-					Math.abs(plane.getLinearVelocity().x) * 0.1f);
-			if (plane.getLinearVelocity().y > 0.9) {
+			plane.setLinearVelocity(plane.getLinearVelocity().x, Math.abs(plane.getLinearVelocity().x) * 0.05f);
+			plane.setAngularVelocity(0);
+			
+			if (plane.getPosition().y > temp + 0.2f) {
 				isFlying = true;
 				joint.enableMotor(false);
 			}
@@ -63,8 +65,7 @@ public class PlaneController implements InputProcessor {
 		float rot = (float) (plane.getTransform().getRotation() + Math.PI / 2);
 		float x = MathUtils.cos(rot);
 		float y = MathUtils.sin(rot);
-		return forceVector.set(currentControllForce * x, currentControllForce
-				* y);
+		return forceVector.set(currentControllForce * x, currentControllForce * y);
 	}
 
 	private void start() {
@@ -90,6 +91,10 @@ public class PlaneController implements InputProcessor {
 			} else {
 				start();
 			}
+			break;
+			
+		case Keys.SPACE:
+			shoot = true;
 			break;
 
 		default:
