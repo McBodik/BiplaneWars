@@ -2,12 +2,8 @@ package com.bw.actors.plane;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.bw.actors.plane.PlaneController.IShoot;
 import com.bw.actors.plane.types.PlaneType;
 
 public class PlaneActor {
@@ -18,39 +14,26 @@ public class PlaneActor {
 
 	public PlaneActor(World world, PlaneType planeType) {
 		this.world = world;
-		planeBuilder = new PlaneBuilder().build(world, planeType);
+		planeBuilder = new PlaneBuilder(world, planeType).build();
 		planeController = new PlaneController(planeBuilder.getPlaneBody(), planeBuilder.getPlaneWheelJoint(), planeType);
+		planeController.setShootCallback(new IShoot() {
+
+			@Override
+			public void shoot() {
+				PlaneActor.this.shoot();
+
+			}
+		});
 	}
-	
-	public PlaneController getPlaneController(){
+
+	public PlaneController getPlaneController() {
 		return planeController;
 	}
-	
-	public void shoot(){
-		if(planeController.shoot){
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(planeBuilder.getPlaneBody().getWorldPoint(new Vector2(3, 0)));
-		bodyDef.fixedRotation = false;
-		
-		CircleShape wheel = new CircleShape();
-		wheel.setRadius(0.25f);
-		
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = 1;
-		fixtureDef.friction = 1;
-		fixtureDef.restitution = 1;
-		fixtureDef.shape = wheel;
-		
-		Body pulya;
-		pulya = world.createBody(bodyDef);
-		pulya.createFixture(fixtureDef);
-		pulya.applyForceToCenter(getSpeedVector(), true);
-		planeController.shoot = false;
+
+	public void shoot() {
+		planeBuilder.getNewBullet().applyForceToCenter(getSpeedVector(), true);
 	}
-		
-	}
-	
+
 	private Vector2 getSpeedVector() {
 		float rot = (float) (planeBuilder.getPlaneBody().getTransform().getRotation());
 		float x = MathUtils.cos(rot);
@@ -60,6 +43,5 @@ public class PlaneActor {
 
 	public void update() {
 		planeController.updateMooving();
-		shoot();
 	}
 }

@@ -16,5 +16,6 @@ public class General extends PlaneType {
 		friction = 0.5f;
 		restitution = 0;
 		frequencyHz = 15;
+		reloadTime = 3;
 	}
 }

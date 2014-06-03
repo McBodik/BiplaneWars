@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.bw.actors.plane.types.PlaneType;
 
@@ -22,8 +21,9 @@ public class PlaneController implements InputProcessor {
 	private Vector2 forceVector = new Vector2();
 	private Vector2 speedVector = new Vector2();
 	private WheelJoint joint;
-	
-	public boolean shoot = false;
+	private IShoot shootCallback = null;
+	private long lastShoot = System.currentTimeMillis();
+	private float reloadTime;
 
 	public PlaneController(Body plane, WheelJoint joint, PlaneType planeType) {
 		this.plane = plane;
@@ -31,9 +31,11 @@ public class PlaneController implements InputProcessor {
 		this.controllForce = planeType.getControllForce();
 		this.speed = planeType.getSpeed();
 		this.currentControllForce = planeType.getControllForce();
+		this.reloadTime = planeType.getReloadTime();
 	}
-	
+
 	private float temp = 0;
+
 	public void updateMooving() {
 		if (isFlying) {
 			plane.setAngularDamping(angularDamping);
@@ -46,7 +48,7 @@ public class PlaneController implements InputProcessor {
 			}
 			plane.setLinearVelocity(plane.getLinearVelocity().x, Math.abs(plane.getLinearVelocity().x) * 0.05f);
 			plane.setAngularVelocity(0);
-			
+
 			if (plane.getPosition().y > temp + 0.2f) {
 				isFlying = true;
 				joint.enableMotor(false);
@@ -73,6 +75,12 @@ public class PlaneController implements InputProcessor {
 			isMotorEnable = true;
 	}
 
+	private boolean isReloaded() {
+		if ((lastShoot + (reloadTime * 1000)) < System.currentTimeMillis())
+			return true;
+		return false;
+	}
+
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
@@ -92,9 +100,12 @@ public class PlaneController implements InputProcessor {
 				start();
 			}
 			break;
-			
+
 		case Keys.SPACE:
-			shoot = true;
+			if (shootCallback != null && isReloaded()){
+				lastShoot = System.currentTimeMillis();
+				shootCallback.shoot();
+			}
 			break;
 
 		default:
@@ -147,6 +158,15 @@ public class PlaneController implements InputProcessor {
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public void setShootCallback(IShoot shoot) {
+		shootCallback = shoot;
+	}
+
+	public interface IShoot {
+
+		public void shoot();
 	}
 
 }

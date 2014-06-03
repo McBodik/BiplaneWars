@@ -15,10 +15,18 @@ import com.bw.actors.plane.types.PlaneType;
 
 public class PlaneBuilder {
 	
+	private World world;
+	private PlaneType type;
+	
 	private Body plane, frontWheel, backWheel;
 	private WheelJoint frontWheelJoint;
 	
-	public PlaneBuilder build(World world, PlaneType type){
+	public PlaneBuilder(World world, PlaneType type){
+		this.world = world;
+		this.type = type; 
+	}
+	
+	public PlaneBuilder build(){
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(new Vector2(-20, -13));
@@ -76,5 +84,26 @@ public class PlaneBuilder {
 	}
 	public WheelJoint getPlaneWheelJoint(){
 		return frontWheelJoint;
+	}
+	
+	public Body getNewBullet(){
+		Body bullet;
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyType.DynamicBody;
+		bodyDef.position.set(plane.getWorldPoint(new Vector2(3, 0)));
+		bodyDef.fixedRotation = false;
+
+		CircleShape wheel = new CircleShape();
+		wheel.setRadius(0.25f);
+
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.density = 1;
+		fixtureDef.friction = 1;
+		fixtureDef.restitution = 1;
+		fixtureDef.shape = wheel;
+		
+		bullet = world.createBody(bodyDef);
+		bullet.createFixture(fixtureDef);
+		return bullet;
 	}
 }
