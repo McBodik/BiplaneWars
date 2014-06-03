@@ -76,7 +76,7 @@ public class PlaneController implements InputProcessor {
 	}
 
 	private boolean isReloaded() {
-		if ((lastShoot + (reloadTime * 1000)) < System.currentTimeMillis())
+		if (lastShoot + (int)reloadTime * 1000 < System.currentTimeMillis())
 			return true;
 		return false;
 	}
