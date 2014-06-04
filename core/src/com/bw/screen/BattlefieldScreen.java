@@ -14,7 +14,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.bw.actors.plane.PlaneActor;
-import com.bw.actors.plane.types.General;
+import com.bw.actors.plane.types.PlaneType;
 import com.bw.bot.BotSimple;
 import com.bw.utils.Category;
 import com.bw.utils.ContactListiner;
@@ -28,7 +28,7 @@ public class BattlefieldScreen implements Screen {
 	PlaneActor plane;
 	PlaneActor bot;
 	BotSimple botAI;
-	
+
 	Array<Body> bulletRecycleBin = new Array<Body>();
 
 	@Override
@@ -82,11 +82,11 @@ public class BattlefieldScreen implements Screen {
 		world.createBody(ground).createFixture(fd);
 
 		world.setContactListener(new ContactListiner(bulletRecycleBin));
-		
-		plane = new PlaneActor(world, new General(), new Vector2(-20, -21.3f));
+
+		plane = new PlaneActor(world, PlaneType.GENERAL, new Vector2(-20, -21.3f));
 		Gdx.input.setInputProcessor(plane.getPlaneController());
-		
-		bot = new PlaneActor(world, new General(), new Vector2(-10, -21.3f));
+
+		bot = new PlaneActor(world, PlaneType.GENERAL, new Vector2(-10, -21.3f));
 		botAI = new BotSimple(bot.getPlaneController());
 	}
 
@@ -105,7 +105,7 @@ public class BattlefieldScreen implements Screen {
 	@Override
 	public void dispose() {
 	}
-	
+
 	private void deleteBullets() {
 		for(Body b : bulletRecycleBin){
 			world.destroyBody(b);
