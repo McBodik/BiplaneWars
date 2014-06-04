@@ -2,64 +2,28 @@ package com.bw.actors.plane.types;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlaneType {
-	protected float speed;
-	protected float motorSpeed;
-	protected float controllForce;
-	protected Vector2 sise;
-	protected Vector2 position;
-	protected float frontWheelRadius, backWheelRadius;
-	protected float density;
-	protected float friction;
-	protected float restitution;
-	protected float frequencyHz;
-	protected float reloadTime;
+public abstract class PlaneType {
 
-	public float getReloadTime() {
-		return reloadTime;
-	}
+    public final static PlaneCharacteristics GENERAL = PlaneCharacteristics.characteristics()
+            .speed(5)
+            .motorSpeed(1000)
+            .controlForce(300)
+            .size(new Vector2(6, 1.4f))
+            .position(new Vector2(0, 0))
+            .frontWheelRadius(0.25f)
+            .backWheelRadius(0.15f)
+            .density(20f)
+            .friction(0.5f)
+            .restitution(0)
+            .frequencyHz(15)
+            .reloadTime(3)
+            .build();
 
-	public float getSpeed() {
-		return speed;
-	}
+    //TODO check this out =)
+    public final static PlaneCharacteristics I_CAN_COPY_AND_MODIFY_EXISTING_TYPES = PlaneCharacteristics.characteristics(GENERAL)
+            .speed(100500)
+            .restitution(0)
+            .frequencyHz(100500)
+            .build();
 
-	public float getMotorSpeed() {
-		return motorSpeed;
-	}
-
-	public float getControllForce() {
-		return controllForce;
-	}
-
-	public Vector2 getSise() {
-		return sise;
-	}
-
-	public Vector2 getPosition() {
-		return position;
-	}
-
-	public float getFrontWheelRadius() {
-		return frontWheelRadius;
-	}
-
-	public float getBackWheelRadius() {
-		return backWheelRadius;
-	}
-
-	public float getDensity() {
-		return density;
-	}
-
-	public float getFriction() {
-		return friction;
-	}
-
-	public float getRestitution() {
-		return restitution;
-	}
-
-	public float getFrequencyHz() {
-		return frequencyHz;
-	}
 }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
+import com.bw.actors.plane.types.PlaneCharacteristics;
 import com.bw.actors.plane.types.PlaneType;
 import com.bw.utils.Category;
 import com.bw.utils.Mask;
@@ -18,14 +19,14 @@ import com.bw.utils.Mask;
 public class PlaneBuilder {
 	
 	private World world;
-	private PlaneType type;
+	private PlaneCharacteristics type;
 	
 	private Body plane, frontWheel, backWheel;
 	private WheelJoint frontWheelJoint;
 	
 	private Vector2 respawn;
 	
-	public PlaneBuilder(World world, PlaneType type, Vector2 position){
+	public PlaneBuilder(World world, PlaneCharacteristics type, Vector2 position){
 		this.world = world;
 		this.type = type; 
 		this.respawn = position;
@@ -40,7 +41,7 @@ public class PlaneBuilder {
 
 		// temp shape
 		PolygonShape planeCabin = new PolygonShape();
-		planeCabin.setAsBox(type.getSise().x / 2, type.getSise().y / 2);
+		planeCabin.setAsBox(type.getSize().x / 2, type.getSize().y / 2);
 
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = type.getDensity();

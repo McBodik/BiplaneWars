@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
-import com.bw.actors.plane.types.PlaneType;
+import com.bw.actors.plane.types.PlaneCharacteristics;
 
 public class PlaneController implements InputProcessor {
 
@@ -25,12 +25,12 @@ public class PlaneController implements InputProcessor {
 	private long lastShoot = System.currentTimeMillis();
 	private float reloadTime;
 
-	public PlaneController(Body plane, WheelJoint joint, PlaneType planeType) {
+	public PlaneController(Body plane, WheelJoint joint, PlaneCharacteristics planeType) {
 		this.plane = plane;
 		this.joint = joint;
-		this.controllForce = planeType.getControllForce();
+		this.controllForce = planeType.getControlForce();
 		this.speed = planeType.getSpeed();
-		this.currentControllForce = planeType.getControllForce();
+		this.currentControllForce = planeType.getControlForce();
 		this.reloadTime = planeType.getReloadTime();
 	}
 
