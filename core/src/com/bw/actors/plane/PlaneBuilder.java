@@ -11,6 +11,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.bw.actors.plane.types.PlaneType;
+import com.bw.utils.Category;
+import com.bw.utils.Mask;
 
 
 public class PlaneBuilder {
@@ -20,6 +22,8 @@ public class PlaneBuilder {
 	
 	private Body plane, frontWheel, backWheel;
 	private WheelJoint frontWheelJoint;
+	
+	private boolean isPlaneEnable = false;
 	
 	public PlaneBuilder(World world, PlaneType type){
 		this.world = world;
@@ -41,6 +45,8 @@ public class PlaneBuilder {
 		fixtureDef.friction = type.getFriction();
 		fixtureDef.restitution = type.getRestitution();
 		fixtureDef.shape = planeCabin;
+		fixtureDef.filter.categoryBits = Category.PLANE;
+		fixtureDef.filter.maskBits = Mask.PLANE; 
 
 		plane = world.createBody(bodyDef);
 		plane.createFixture(fixtureDef);
@@ -76,6 +82,7 @@ public class PlaneBuilder {
 
 		frontWheelJoint = (WheelJoint)world.createJoint(wheelDef);
 		plane.setAngularDamping(1f);
+		isPlaneEnable = true;
 		return this;
 	}
 	
@@ -86,11 +93,18 @@ public class PlaneBuilder {
 		return frontWheelJoint;
 	}
 	
+	public void destroyPlane(){
+		isPlaneEnable = false;
+		world.destroyBody(plane);
+		world.destroyBody(backWheel);
+		world.destroyBody(frontWheel);
+	}
+	
 	public Body getNewBullet(){
 		Body bullet;
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(plane.getWorldPoint(new Vector2(3, 0)));
+		bodyDef.position.set(plane.getWorldPoint(new Vector2(3.5f, 0)));
 		bodyDef.fixedRotation = false;
 
 		CircleShape wheel = new CircleShape();
@@ -102,8 +116,15 @@ public class PlaneBuilder {
 		fixtureDef.restitution = 1;
 		fixtureDef.shape = wheel;
 		
+		fixtureDef.filter.categoryBits = Category.BULLET;
+		fixtureDef.filter.maskBits = Mask.BULLET; 
+		
 		bullet = world.createBody(bodyDef);
 		bullet.createFixture(fixtureDef);
 		return bullet;
+	}
+
+	public boolean isPlaneEnable() {
+		return isPlaneEnable;
 	}
 }

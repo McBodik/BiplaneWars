@@ -7,7 +7,7 @@ import com.bw.actors.plane.PlaneController.IShoot;
 import com.bw.actors.plane.types.PlaneType;
 
 public class PlaneActor {
-
+	public static boolean iskilled = false;
 	private PlaneBuilder planeBuilder;
 	private PlaneController planeController;
 	World world;
@@ -15,7 +15,8 @@ public class PlaneActor {
 	public PlaneActor(World world, PlaneType planeType) {
 		this.world = world;
 		planeBuilder = new PlaneBuilder(world, planeType).build();
-		planeController = new PlaneController(planeBuilder.getPlaneBody(), planeBuilder.getPlaneWheelJoint(), planeType);
+		planeController = new PlaneController(planeBuilder.getPlaneBody(),
+				planeBuilder.getPlaneWheelJoint(), planeType);
 		planeController.setShootCallback(new IShoot() {
 
 			@Override
@@ -35,13 +36,19 @@ public class PlaneActor {
 	}
 
 	private Vector2 getSpeedVector() {
-		float rot = (float) (planeBuilder.getPlaneBody().getTransform().getRotation());
+		float rot = (float) (planeBuilder.getPlaneBody().getTransform()
+				.getRotation());
 		float x = MathUtils.cos(rot);
 		float y = MathUtils.sin(rot);
 		return new Vector2(1000 * x, 1000 * y);
 	}
 
 	public void update() {
-		planeController.updateMooving();
+		if (planeBuilder.isPlaneEnable()) {
+			planeController.updateMooving();
+			if (iskilled) {
+				planeBuilder.destroyPlane();
+			}
+		}
 	}
 }
