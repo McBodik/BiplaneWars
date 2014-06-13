@@ -1,23 +1,22 @@
-package com.bw.screens;
+package com.bw.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.bw.actors.plane.PlaneActor;
 import com.bw.actors.plane.types.General;
 import com.bw.utils.Category;
+import com.bw.utils.ContactListiner;
 import com.bw.utils.Mask;
 
 public class BattlefieldScreen implements Screen {
@@ -26,6 +25,9 @@ public class BattlefieldScreen implements Screen {
 	Box2DDebugRenderer renderer;
 	OrthographicCamera camera;
 	PlaneActor plane;
+	PlaneActor bot;
+	
+	Array<Body> bulletRecycleBin = new Array<Body>();
 
 	@Override
 	public void render(float delta) {
@@ -33,6 +35,8 @@ public class BattlefieldScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		plane.update();
+		bot.update();
+		deleteBullets();
 		world.step(1 / 60f, 8, 3);
 		renderer.render(world, camera.combined);
 	}
@@ -74,42 +78,12 @@ public class BattlefieldScreen implements Screen {
 
 		world.createBody(ground).createFixture(fd);
 
-		world.setContactListener(new ContactListener() {
-			
-			@Override
-			public void preSolve(Contact contact, Manifold oldManifold) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void postSolve(Contact contact, ContactImpulse impulse) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void endContact(Contact contact) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void beginContact(Contact contact) {
-				if((contact.getFixtureA().getFilterData().categoryBits == Category.BULLET  && contact.getFixtureB().getFilterData().categoryBits == Category.PLANE) || (contact.getFixtureB().getFilterData().categoryBits == Category.BULLET  && contact.getFixtureA().getFilterData().categoryBits == Category.PLANE)){
-					//world.destroyJoint(joint);
-					PlaneActor.iskilled = true;
-					if(contact.getFixtureA().getFilterData().categoryBits == Category.BULLET){
-						world.destroyBody(contact.getFixtureA().getBody());
-					} else if(contact.getFixtureB().getFilterData().categoryBits == Category.BULLET){
-						world.destroyBody(contact.getFixtureB().getBody());
-					}
-				}
-			}
-		});
+		world.setContactListener(new ContactListiner(bulletRecycleBin));
 		
-		plane = new PlaneActor(world, new General());
+		plane = new PlaneActor(world, new General(), new Vector2(-20, -15));
 		Gdx.input.setInputProcessor(plane.getPlaneController());
+		
+		bot = new PlaneActor(world, new General(), new Vector2(20, -15));
 	}
 
 	@Override
@@ -126,6 +100,13 @@ public class BattlefieldScreen implements Screen {
 
 	@Override
 	public void dispose() {
+	}
+	
+	private void deleteBullets() {
+		for(Body b : bulletRecycleBin){
+			world.destroyBody(b);
+			bulletRecycleBin.removeValue(b, false);
+		}
 	}
 
 }

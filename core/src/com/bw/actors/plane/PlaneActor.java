@@ -7,16 +7,16 @@ import com.bw.actors.plane.PlaneController.IShoot;
 import com.bw.actors.plane.types.PlaneType;
 
 public class PlaneActor {
-	public static boolean iskilled = false;
+
+	private short planeStatus;
 	private PlaneBuilder planeBuilder;
 	private PlaneController planeController;
 	World world;
 
-	public PlaneActor(World world, PlaneType planeType) {
+	public PlaneActor(World world, PlaneType planeType, Vector2 position) {
 		this.world = world;
-		planeBuilder = new PlaneBuilder(world, planeType).build();
-		planeController = new PlaneController(planeBuilder.getPlaneBody(),
-				planeBuilder.getPlaneWheelJoint(), planeType);
+		planeBuilder = new PlaneBuilder(world, planeType, position).build();
+		planeController = new PlaneController(planeBuilder.getPlaneBody(), planeBuilder.getPlaneWheelJoint(), planeType);
 		planeController.setShootCallback(new IShoot() {
 
 			@Override
@@ -25,6 +25,8 @@ public class PlaneActor {
 
 			}
 		});
+		planeBuilder.getPlaneBody().setUserData(new PlaneUserData(this));
+		planeStatus = STATUS_IS_ALIVE;
 	}
 
 	public PlaneController getPlaneController() {
@@ -36,19 +38,27 @@ public class PlaneActor {
 	}
 
 	private Vector2 getSpeedVector() {
-		float rot = (float) (planeBuilder.getPlaneBody().getTransform()
-				.getRotation());
+		float rot = (float) (planeBuilder.getPlaneBody().getTransform().getRotation());
 		float x = MathUtils.cos(rot);
 		float y = MathUtils.sin(rot);
 		return new Vector2(1000 * x, 1000 * y);
 	}
 
 	public void update() {
-		if (planeBuilder.isPlaneEnable()) {
+		if (planeStatus == STATUS_PREPARE_TO_KILL) {
+			planeBuilder.destroyPlane();
+			planeStatus = STATUS_KILLED;
+		}
+		if (planeStatus == STATUS_IS_ALIVE) {
 			planeController.updateMooving();
-			if (iskilled) {
-				planeBuilder.destroyPlane();
-			}
 		}
 	}
+
+	public void killPlane() {
+		planeStatus = STATUS_PREPARE_TO_KILL;
+	}
+	
+	private final short STATUS_IS_ALIVE = -1;
+	private final short STATUS_PREPARE_TO_KILL = 0;
+	private final short STATUS_KILLED = 1;
 }

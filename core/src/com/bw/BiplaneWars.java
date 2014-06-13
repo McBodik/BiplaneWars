@@ -1,7 +1,7 @@
 package com.bw;
 
 import com.badlogic.gdx.Game;
-import com.bw.screens.BattlefieldScreen;
+import com.bw.screen.BattlefieldScreen;
 
 public class BiplaneWars extends Game {
 

@@ -23,17 +23,18 @@ public class PlaneBuilder {
 	private Body plane, frontWheel, backWheel;
 	private WheelJoint frontWheelJoint;
 	
-	private boolean isPlaneEnable = false;
+	private Vector2 respawn;
 	
-	public PlaneBuilder(World world, PlaneType type){
+	public PlaneBuilder(World world, PlaneType type, Vector2 position){
 		this.world = world;
 		this.type = type; 
+		this.respawn = position;
 	}
 	
 	public PlaneBuilder build(){
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(new Vector2(-20, -13));
+		bodyDef.position.set(respawn);
 		bodyDef.fixedRotation = false;
 
 		// temp shape
@@ -50,7 +51,7 @@ public class PlaneBuilder {
 
 		plane = world.createBody(bodyDef);
 		plane.createFixture(fixtureDef);
-
+		
 		CircleShape wheel = new CircleShape();
 		wheel.setRadius(0.25f);
 
@@ -82,7 +83,6 @@ public class PlaneBuilder {
 
 		frontWheelJoint = (WheelJoint)world.createJoint(wheelDef);
 		plane.setAngularDamping(1f);
-		isPlaneEnable = true;
 		return this;
 	}
 	
@@ -94,7 +94,6 @@ public class PlaneBuilder {
 	}
 	
 	public void destroyPlane(){
-		isPlaneEnable = false;
 		world.destroyBody(plane);
 		world.destroyBody(backWheel);
 		world.destroyBody(frontWheel);
@@ -122,9 +121,5 @@ public class PlaneBuilder {
 		bullet = world.createBody(bodyDef);
 		bullet.createFixture(fixtureDef);
 		return bullet;
-	}
-
-	public boolean isPlaneEnable() {
-		return isPlaneEnable;
 	}
 }
