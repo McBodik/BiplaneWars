@@ -43,6 +43,7 @@ public class PlaneController implements InputProcessor {
 			plane.setLinearVelocity(getSpeedVector());
 		} else if (isMotorEnable) {
 			if (!joint.isMotorEnabled()) {
+				joint.getBodyB().setFixedRotation(false);
 				joint.enableMotor(true);
 				temp = plane.getPosition().y;
 			}
@@ -76,7 +77,7 @@ public class PlaneController implements InputProcessor {
 	}
 
 	private boolean isReloaded() {
-		if (lastShoot + (int)reloadTime * 1000 < System.currentTimeMillis())
+		if (lastShoot + (int) reloadTime * 1000 < System.currentTimeMillis())
 			return true;
 		return false;
 	}
@@ -102,7 +103,7 @@ public class PlaneController implements InputProcessor {
 			break;
 
 		case Keys.SPACE:
-			if (shootCallback != null && isReloaded()){
+			if (shootCallback != null && isReloaded()) {
 				lastShoot = System.currentTimeMillis();
 				shootCallback.shoot();
 			}
@@ -162,6 +163,10 @@ public class PlaneController implements InputProcessor {
 
 	public void setShootCallback(IShoot shoot) {
 		shootCallback = shoot;
+	}
+	
+	public boolean isFlying(){
+		return isFlying;
 	}
 
 	public interface IShoot {

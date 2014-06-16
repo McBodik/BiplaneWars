@@ -13,5 +13,10 @@ public class BotSimple {
 		controoler.keyDown(Keys.W);
 	}
 	
+	public void update(){
+		if(controoler.isFlying()){
+			controoler.keyUp(Keys.W);
+		}
+	}
 	
 }

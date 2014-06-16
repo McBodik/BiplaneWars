@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.bw.actors.plane.PlaneActor;
 import com.bw.actors.plane.types.General;
+import com.bw.bot.BotSimple;
 import com.bw.utils.Category;
 import com.bw.utils.ContactListiner;
 import com.bw.utils.Mask;
@@ -26,6 +27,7 @@ public class BattlefieldScreen implements Screen {
 	OrthographicCamera camera;
 	PlaneActor plane;
 	PlaneActor bot;
+	BotSimple botAI;
 	
 	Array<Body> bulletRecycleBin = new Array<Body>();
 
@@ -36,6 +38,7 @@ public class BattlefieldScreen implements Screen {
 
 		plane.update();
 		bot.update();
+		botAI.update();
 		deleteBullets();
 		world.step(1 / 60f, 8, 3);
 		renderer.render(world, camera.combined);
@@ -80,10 +83,11 @@ public class BattlefieldScreen implements Screen {
 
 		world.setContactListener(new ContactListiner(bulletRecycleBin));
 		
-		plane = new PlaneActor(world, new General(), new Vector2(-20, -15));
+		plane = new PlaneActor(world, new General(), new Vector2(-20, -21.3f));
 		Gdx.input.setInputProcessor(plane.getPlaneController());
 		
-		bot = new PlaneActor(world, new General(), new Vector2(20, -15));
+		bot = new PlaneActor(world, new General(), new Vector2(-10, -21.3f));
+		botAI = new BotSimple(bot.getPlaneController());
 	}
 
 	@Override

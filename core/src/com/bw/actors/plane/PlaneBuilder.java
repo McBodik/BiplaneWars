@@ -35,6 +35,7 @@ public class PlaneBuilder {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(respawn);
+		bodyDef.angle = 0.15f;
 		bodyDef.fixedRotation = false;
 
 		// temp shape
@@ -57,11 +58,13 @@ public class PlaneBuilder {
 
 		fixtureDef.shape = wheel;
 
+		bodyDef.fixedRotation = true;
 		frontWheel = world.createBody(bodyDef);
 		fixtureDef.friction = 1;
 		frontWheel.createFixture(fixtureDef);
 
 		wheel.setRadius(0.15f);
+		bodyDef.fixedRotation = false;
 		backWheel = world.createBody(bodyDef);
 		backWheel.createFixture(fixtureDef);
 
@@ -75,7 +78,7 @@ public class PlaneBuilder {
 		wheelDef.maxMotorTorque = type.getMotorSpeed();
 		wheelDef.motorSpeed = -type.getMotorSpeed();
 		wheelDef.enableMotor = false;
-
+		
 		world.createJoint(wheelDef);
 
 		wheelDef.bodyB = backWheel;
@@ -83,6 +86,7 @@ public class PlaneBuilder {
 
 		frontWheelJoint = (WheelJoint)world.createJoint(wheelDef);
 		plane.setAngularDamping(1f);
+
 		return this;
 	}
 	
