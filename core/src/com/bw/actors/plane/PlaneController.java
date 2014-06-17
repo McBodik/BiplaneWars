@@ -168,6 +168,10 @@ public class PlaneController implements InputProcessor {
 	public boolean isFlying(){
 		return isFlying;
 	}
+	
+	public Vector2 getCurrentPosition(){
+		return plane.getPosition();
+	}
 
 	public interface IShoot {
 
