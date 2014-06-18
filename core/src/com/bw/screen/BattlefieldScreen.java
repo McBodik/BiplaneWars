@@ -61,7 +61,7 @@ public class BattlefieldScreen implements Screen {
 		rectangle.createChain(new Vector2[] {
 
 				new Vector2(-Gdx.graphics.getWidth() / 20f, Gdx.graphics
-						.getHeight() / 20f),
+						.getHeight() / 20f - 5),
 				new Vector2(-Gdx.graphics.getWidth() / 20f, -23),
 				new Vector2(Gdx.graphics.getWidth() / 20f, -23),
 				new Vector2(Gdx.graphics.getWidth() / 20f, Gdx.graphics

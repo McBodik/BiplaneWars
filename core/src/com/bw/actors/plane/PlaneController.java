@@ -58,7 +58,7 @@ public class PlaneController implements InputProcessor {
 	}
 
 	private Vector2 getSpeedVector() {
-		float rot = (float) (plane.getTransform().getRotation());
+		float rot = plane.getTransform().getRotation();
 		float x = MathUtils.cos(rot);
 		float y = MathUtils.sin(rot);
 		return speedVector.set(speed * x, speed * y);
@@ -171,6 +171,10 @@ public class PlaneController implements InputProcessor {
 	
 	public Vector2 getCurrentPosition(){
 		return plane.getPosition();
+	}
+	
+	public float getCurrentAngle(){
+		return plane.getTransform().getRotation();
 	}
 
 	public interface IShoot {
