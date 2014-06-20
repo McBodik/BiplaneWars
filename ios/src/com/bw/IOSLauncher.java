@@ -11,7 +11,7 @@ public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new BiplaneWars(), config);
+        return new IOSApplication(BiplaneWars.getInstance(), config);
     }
 
     public static void main(String[] argv) {
