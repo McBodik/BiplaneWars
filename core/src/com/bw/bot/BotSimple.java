@@ -3,38 +3,38 @@ package com.bw.bot;
 import com.badlogic.gdx.Input.Keys;
 import com.bw.actors.plane.PlaneController;
 
+public class BotSimple extends Bot {
 
-public class BotSimple extends Bot{
 	private PlaneController controoler;
-	
-	public BotSimple(PlaneController planeControoler){
+	private boolean isFlying = false;
+	private boolean keyDown = false;
+
+	public BotSimple(PlaneController planeControoler) {
 		controoler = planeControoler;
-		
+
 		controoler.keyDown(Keys.W);
 	}
-	
-	public void update(){
-		if(controoler.isFlying()){
+
+	public void update() {
+		if (!isFlying && controoler.isFlying()) {
 			controoler.keyUp(Keys.W);
+			isFlying = true;
 		}
-		
-		updateNearestObstacles(controoler.getCurrentPosition());
-		
-		if((obstacles & BOTTOM) == BOTTOM){
-			controoler.keyDown(Keys.W);
-		} else
-		if((obstacles & TOP) == TOP){
-			controoler.keyDown(Keys.S);
-		} else
-		
-		if((obstacles & RIGHT) == RIGHT || (obstacles & LEFT) == LEFT){
-			controoler.keyDown(Keys.W);
+
+		if (isFlying && updateNearestObstacles(controoler.getCurrentPosition())) {
+			if (!keyDown) {
+				controoler.keyDown(choiceWayToAvoidObstacles(controoler.getCurrentAngle()) ? Keys.W : Keys.S);
+				keyDown = true;
+			}
 		} else {
-			controoler.keyUp(Keys.W);
-			controoler.keyUp(Keys.S);
+			resetPress();
 		}
-		
-		
 	}
-	
+
+	private void resetPress() {
+		keyDown = false;
+		controoler.keyUp(Keys.W);
+		controoler.keyUp(Keys.S);
+	}
+
 }
