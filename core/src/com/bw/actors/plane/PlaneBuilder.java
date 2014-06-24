@@ -3,15 +3,14 @@ package com.bw.actors.plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.bw.actors.plane.types.PlaneCharacteristics;
-import com.bw.actors.plane.types.PlaneType;
 import com.bw.utils.Category;
 import com.bw.utils.Mask;
 

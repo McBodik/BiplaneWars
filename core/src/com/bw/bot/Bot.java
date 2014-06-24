@@ -35,6 +35,7 @@ public class Bot {
 	}
 
 	/**
+	 * TODO more intelligent way to avoid obstacles :) 
 	 * @return way: false - down, true - up
 	 */
 	public boolean choiceWayToAvoidObstacles(float rotationAngle) {
@@ -64,7 +65,7 @@ public class Bot {
 			break;
 
 		case TOP:
-			if (sin > 0.9) {
+			if (sin == 1) {
 				key = new Random().nextBoolean();
 			} else if (cos > 0.1) {
 				key = false;

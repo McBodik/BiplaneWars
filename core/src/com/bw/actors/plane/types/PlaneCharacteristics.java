@@ -2,7 +2,7 @@ package com.bw.actors.plane.types;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class PlaneCharacteristics {
+public class PlaneCharacteristics implements Cloneable {
     protected float speed;
     protected float motorSpeed;
     protected float controlForce;

@@ -3,9 +3,8 @@ package com.bw.actors.plane;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.bw.actors.plane.types.PlaneCharacteristics;
 import com.bw.actors.plane.PlaneController.IShoot;
+import com.bw.actors.plane.types.PlaneCharacteristics;
 
 public class PlaneActor {
 
