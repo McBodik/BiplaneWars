@@ -28,21 +28,19 @@ public class BotSimple extends Bot {
 			resetPress();
 			isFlying = true;
 		} else {
-			if (isFlying
-					&& updateNearestObstacles(controoler.getCurrentPosition())) {
-				int press = choiceWayToAvoidObstacles(controoler
-						.getCurrentAngle()) ? Keys.W : Keys.S;
+			if (isFlying && updateNearestObstacles(controoler.getCurrentPosition())) {
+				int press = choiceWayToAvoidObstacles(controoler.getCurrentAngle());
 				if (currentKeyPressed != press) {
 					currentKeyPressed = press;
 					controoler.keyDown(currentKeyPressed);
 				}
 			} else {
-//				int press = fly();
-//				if (currentKeyPressed != press) {
+				int press = fly();
+				if (currentKeyPressed != press) {
 					resetPress();
-//					currentKeyPressed = press;
-//					controoler.keyDown(currentKeyPressed);
-//				}
+					currentKeyPressed = press;
+					controoler.keyDown(currentKeyPressed);
+				}
 			}
 		}
 	}
@@ -56,8 +54,7 @@ public class BotSimple extends Bot {
 		if (aX < currentX) {
 			return Keys.W;
 		} else {
-			float wayYPoint = (float) Math
-					.sqrt((1 - ((currentX * currentX) / (aX * aX))) * (bY * bY));
+			float wayYPoint = (float) Math.sqrt((1 - ((currentX * currentX) / (aX * aX))) * (bY * bY));
 			if (currentY > 0) {
 				if (Math.abs(cos) > 0.8)
 					return KEY_UNPRESSED;
@@ -79,6 +76,4 @@ public class BotSimple extends Bot {
 		controoler.keyUp(Keys.W);
 		controoler.keyUp(Keys.S);
 	}
-
-	private final static int KEY_UNPRESSED = -1;
 }

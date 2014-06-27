@@ -1,6 +1,7 @@
 package com.bw.bot;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -38,49 +39,49 @@ public class Bot {
 	 * TODO more intelligent way to avoid obstacles :) 
 	 * @return way: false - down, true - up
 	 */
-	public boolean choiceWayToAvoidObstacles(float rotationAngle) {
-		boolean key = false;
+	public int choiceWayToAvoidObstacles(float rotationAngle) {
+		int key = KEY_UNPRESSED;
 		float cos = MathUtils.cos(rotationAngle);
 		float sin = MathUtils.sin(rotationAngle);
 		switch (obstacles) {
 
 		case LEFT:
 			if (cos < -0.9) {
-				key = new Random().nextBoolean();
+				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
 			} else if (sin > 0.9) {
-				key = true;
+				key = KEY_UP;
 			} else if (sin < -0.9) {
-				key = false;
+				key = KEY_DOWN;
 			}
 			break;
 
 		case RIGHT:
 			if (cos > 0.9) {
-				key = new Random().nextBoolean();
+				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
 			} else if (sin > 0.9) {
-				key = true;
+				key = KEY_UP;
 			} else if (sin < -0.9) {
-				key = false;
+				key = KEY_DOWN;
 			}
 			break;
 
 		case TOP:
 			if (sin == 1) {
-				key = new Random().nextBoolean();
+				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
 			} else if (cos > 0.1) {
-				key = false;
+				key = KEY_DOWN;
 			} else if (cos < -0.1) {
-				key = true;
+				key = KEY_UP;
 			}
 			break;
 
 		case BOTTOM:
 			if (sin < -0.9) {
-				key = new Random().nextBoolean();
+				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
 			} else if (cos > 0.1) {
-				key = true;
+				key = KEY_UP;
 			} else if (cos < -0.1) {
-				key = false;
+				key = KEY_DOWN;
 			}
 			break;
 
@@ -101,7 +102,7 @@ public class Bot {
 			break;
 
 		default:
-			key = new Random().nextBoolean();
+			key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
 			break;
 		}
 		return key;
@@ -111,4 +112,9 @@ public class Bot {
 	public final static short TOP = 0x2;
 	public final static short RIGHT = 0x4;
 	public final static short BOTTOM = 0x8;
+	
+	public final static int KEY_UNPRESSED = -1;
+	public final static int KEY_UP = Keys.W;
+	public final static int KEY_DOWN = Keys.S;
+	public final static int KEY_SHOOT = Keys.SPACE;
 }
