@@ -2,11 +2,11 @@ package com.bw.actors.plane;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.bw.actors.plane.types.PlaneCharacteristics;
+import com.bw.utils.VectorUtils;
 
 public class PlaneController implements InputProcessor {
 
@@ -18,12 +18,11 @@ public class PlaneController implements InputProcessor {
 	private float angularDamping = 1;
 	private boolean isMotorEnable = false;
 	private Vector2 pointForFoce = new Vector2(2.5f, 0);
-	private Vector2 forceVector = new Vector2();
-	private Vector2 speedVector = new Vector2();
 	private WheelJoint joint;
 	private IShoot shootCallback = null;
 	private long lastShoot = System.currentTimeMillis();
 	private float reloadTime;
+	private VectorUtils vectorUtils;
 
 	public PlaneController(Body plane, WheelJoint joint, PlaneCharacteristics planeType) {
 		this.plane = plane;
@@ -32,6 +31,7 @@ public class PlaneController implements InputProcessor {
 		this.speed = planeType.getSpeed();
 		this.currentControllForce = planeType.getControlForce();
 		this.reloadTime = planeType.getReloadTime();
+		vectorUtils = new VectorUtils();
 	}
 
 	private float temp = 0;
@@ -39,8 +39,8 @@ public class PlaneController implements InputProcessor {
 	public void updateMooving() {
 		if (isFlying) {
 			plane.setAngularDamping(angularDamping);
-			plane.applyForce(getCotrollForceVector(), plane.getWorldPoint(pointForFoce), true);
-			plane.setLinearVelocity(getSpeedVector());
+			plane.applyForce(vectorUtils.getTopDirectionUnitVector(getCurrentAngle()).scl(currentControllForce), plane.getWorldPoint(pointForFoce), true);
+			plane.setLinearVelocity(vectorUtils.getDirectionUnitVector(getCurrentAngle()).scl(speed));
 		} else if (isMotorEnable) {
 			if (!joint.isMotorEnabled()) {
 				joint.getBodyB().setFixedRotation(false);
@@ -55,20 +55,6 @@ public class PlaneController implements InputProcessor {
 				joint.enableMotor(false);
 			}
 		}
-	}
-
-	private Vector2 getSpeedVector() {
-		float rot = plane.getTransform().getRotation();
-		float x = MathUtils.cos(rot);
-		float y = MathUtils.sin(rot);
-		return speedVector.set(speed * x, speed * y);
-	}
-
-	private Vector2 getCotrollForceVector() {
-		float rot = (float) (plane.getTransform().getRotation() + Math.PI / 2);
-		float x = MathUtils.cos(rot);
-		float y = MathUtils.sin(rot);
-		return forceVector.set(currentControllForce * x, currentControllForce * y);
 	}
 
 	private void start() {
