@@ -23,6 +23,17 @@ public class VectorUtils {
 	}
 	
 	/**
+	 * vector direction from point1 to point2
+	 */
+	public static Vector2 getVectorFromTwoPoints(Vector2 point1, Vector2 point2){
+		return new Vector2(point2.x - point1.x, point2.y - point1.y);
+	}
+	
+	public static double angleBetweenTwoVectors(Vector2 vector1, Vector2 vector2){
+		return Math.acos(vector1.dot(vector2)/(vector1.len2() * vector2.len()));
+	}
+	
+	/**
 	 * sp - scalar product 
 	 */
 	public static int SP_SAME_DIRECTION = 1;
