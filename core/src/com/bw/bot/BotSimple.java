@@ -1,5 +1,8 @@
 package com.bw.bot;
 
+import java.util.Date;
+import java.util.Random;
+
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Vector2;
 import com.bw.actors.plane.PlaneController;
@@ -11,6 +14,7 @@ public class BotSimple extends Bot {
 	private boolean isFlying = false;
 	private int currentKeyPressed = KEY_UNPRESSED;
 	private VectorUtils vectorUtils;
+	private Date nextActionChange;
 
 	// цей бот літає по еліпсу
 	private float aX; // велика піввісь еліпса
@@ -21,7 +25,7 @@ public class BotSimple extends Bot {
 		controoler = planeControoler;
 
 		controoler.keyDown(Keys.W);
-		aX = rightWall - 10;
+		aX = rightWall - 15;
 		bY = topWall - 10;
 		vectorUtils = new VectorUtils();
 	}
@@ -50,6 +54,37 @@ public class BotSimple extends Bot {
 
 	private int fly() {
 		Vector2 currentPosition = controoler.getCurrentPosition();
+		if(Math.abs(currentPosition.x) > aX || Math.abs(currentPosition.y) > bY){
+			return outOfEllipse(currentPosition);
+		}
+		return inEllipse();
+	}
+	
+	private int inEllipse(){
+		int key = currentKeyPressed;
+		if(nextActionChange == null){
+			nextActionChange = new Date();
+		}
+		if ((new Date()).getTime() >= nextActionChange.getTime()){
+			nextActionChange = new Date(new Date().getTime() + (new Random().nextInt(4)) * 1000);
+			System.out.println(nextActionChange);
+			switch (new Random().nextInt(2)) {
+			case 0:
+				key = KEY_UNPRESSED;
+				break;
+			case 1:
+				key = KEY_DOWN;
+				break;
+			case 2:
+				key = KEY_UP;
+				break;
+			}
+			
+		}
+		return key;
+	}
+	
+	private int outOfEllipse(Vector2 currentPosition) {
 		float currentX = currentPosition.x;
 		float currentY = currentPosition.y;
 		Vector2 direction = vectorUtils.getDirectionUnitVector(controoler.getCurrentAngle());
@@ -67,15 +102,20 @@ public class BotSimple extends Bot {
 			condConn2 = VectorUtils.getVectorFromTwoPoints(currentPosition, new Vector2(Math.signum(currentX) * aX, 0));
 		}
 		
-		Vector2 condSum = condConn1.add(condConn2);
+		Vector2 condSum = new Vector2(condConn1);
+		condSum.add(condConn2);
 		double condAngle = VectorUtils.angleBetweenTwoVectors(condConn1, condConn2);
 		double condDirAngle = VectorUtils.angleBetweenTwoVectors(condSum, direction);
 		if(condDirAngle > condAngle / 2){
-			return Keys.W;
+			Vector2 directionNormal = vectorUtils.getTopDirectionUnitVector(controoler.getCurrentAngle());
+			double coefDirection = directionNormal.dot(condSum);	//1 - same direction, -1 opposite, 0 - perpendicular
+			if(coefDirection < 0) {
+				return KEY_DOWN;
+			} else if (coefDirection > 0){
+				return KEY_UP;
+			} else return new Random().nextBoolean() ? KEY_UP : KEY_DOWN; 
 		} else return KEY_UNPRESSED;
 	}
-	
-	private double temp = 0;
 
 	private void resetPress() {
 		currentKeyPressed = KEY_UNPRESSED;

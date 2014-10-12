@@ -46,59 +46,50 @@ public class Bot {
 		switch (obstacles) {
 
 		case LEFT:
-			if (cos < -0.9) {
-				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
-			} else if (sin > 0.9) {
-				key = KEY_UP;
-			} else if (sin < -0.9) {
+			if (sin > 0) {
 				key = KEY_DOWN;
+			} else {
+				key = KEY_UP;
 			}
 			break;
-
 		case RIGHT:
-			if (cos > 0.9) {
-				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
-			} else if (sin > 0.9) {
+//			if (Math.abs(cos) > 0.9) {
+//				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
+//			} else 
+				if (sin > 0) {
 				key = KEY_UP;
-			} else if (sin < -0.9) {
+			} else {
 				key = KEY_DOWN;
 			}
 			break;
 
 		case TOP:
-			if (sin == 1) {
-				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
-			} else if (cos > 0.1) {
+//			if (sin > 0.9) {
+//				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
+//			} else 
+				if (cos > 0) {
 				key = KEY_DOWN;
-			} else if (cos < -0.1) {
+			} else {
 				key = KEY_UP;
 			}
 			break;
 
 		case BOTTOM:
-			if (sin < -0.9) {
-				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
-			} else if (cos > 0.1) {
+//			if (sin < -0.9) {
+//				key = new Random().nextBoolean() ? KEY_UP : KEY_DOWN;
+//			} else 
+				if (cos > 0) {
 				key = KEY_UP;
-			} else if (cos < -0.1) {
+			} else {
 				key = KEY_DOWN;
 			}
 			break;
 
 		case LEFT + TOP:
-
-			break;
-
 		case LEFT + BOTTOM:
-
-			break;
-
 		case RIGHT + TOP:
-
-			break;
-
 		case RIGHT + BOTTOM:
-
+			//eject (move it to default)
 			break;
 
 		default:

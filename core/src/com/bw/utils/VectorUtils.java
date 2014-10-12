@@ -30,7 +30,7 @@ public class VectorUtils {
 	}
 	
 	public static double angleBetweenTwoVectors(Vector2 vector1, Vector2 vector2){
-		return Math.acos(vector1.dot(vector2)/(vector1.len2() * vector2.len()));
+		return Math.acos(vector1.dot(vector2)/(vector1.len() * vector2.len()));
 	}
 	
 	/**
