@@ -16,9 +16,9 @@ public class BotSimple extends Bot {
 	private VectorUtils vectorUtils;
 	private Date nextActionChange;
 
-	// цей бот літає по еліпсу
-	private float aX; // велика піввісь еліпса
-	private float bY; // маленька піввісь еліпса
+	//ellipse semiaxis
+	private float aX;
+	private float bY;
 
 	public BotSimple(PlaneController planeControoler) {
 		super();
