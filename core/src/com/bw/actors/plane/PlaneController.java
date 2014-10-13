@@ -15,6 +15,7 @@ public class PlaneController implements InputProcessor {
 	private float currentControllForce = 0;
 	private float speed;
 	private boolean isFlying = false;
+	private boolean isFall = false;
 	private float angularDamping = 1;
 	private boolean isMotorEnable = false;
 	private Vector2 pointForFoce = new Vector2(2.5f, 0);
@@ -23,6 +24,7 @@ public class PlaneController implements InputProcessor {
 	private long lastShoot = System.currentTimeMillis();
 	private float reloadTime;
 	private VectorUtils vectorUtils;
+	private boolean lastForceApplyed = false;
 
 	public PlaneController(Body plane, WheelJoint joint, PlaneCharacteristics planeType) {
 		this.plane = plane;
@@ -37,7 +39,21 @@ public class PlaneController implements InputProcessor {
 	private float temp = 0;
 
 	public void updateMooving() {
-		if (isFlying) {
+		if (isFall) {
+			if (!lastForceApplyed) {
+				Vector2 force = vectorUtils.getDirectionUnitVector(getCurrentAngle());
+				force.x *= 100;
+				force.y *= 100;
+				plane.applyForceToCenter(force, true);
+			}
+			Vector2 normalToPlaneDireaction = vectorUtils.getTopDirectionUnitVector(getCurrentAngle());
+			double coefDirection = normalToPlaneDireaction.dot(new Vector2(0, -1)); //1 - same direction, -1 opposite, 0 - perpendicular
+			if (Math.abs(coefDirection) > 0.2) {
+				float force = controllForce * 10 * (float) Math.signum(coefDirection);
+				plane.applyForce(vectorUtils.getTopDirectionUnitVector(getCurrentAngle()).scl(force), plane.getWorldPoint(pointForFoce), true);
+			}
+
+		} else if (isFlying) {
 			plane.setAngularDamping(angularDamping);
 			plane.applyForce(vectorUtils.getTopDirectionUnitVector(getCurrentAngle()).scl(currentControllForce), plane.getWorldPoint(pointForFoce), true);
 			plane.setLinearVelocity(vectorUtils.getDirectionUnitVector(getCurrentAngle()).scl(speed));
@@ -94,7 +110,9 @@ public class PlaneController implements InputProcessor {
 				shootCallback.shoot();
 			}
 			break;
-
+		case Keys.ENTER:
+			((PlaneUserData) plane.getUserData()).getPlaneActor().prepareToEjectPilot();
+			isFall = true;
 		default:
 			return false;
 		}
@@ -150,16 +168,16 @@ public class PlaneController implements InputProcessor {
 	public void setShootCallback(IShoot shoot) {
 		shootCallback = shoot;
 	}
-	
-	public boolean isFlying(){
+
+	public boolean isFlying() {
 		return isFlying;
 	}
-	
-	public Vector2 getCurrentPosition(){
+
+	public Vector2 getCurrentPosition() {
 		return plane.getPosition();
 	}
-	
-	public float getCurrentAngle(){
+
+	public float getCurrentAngle() {
 		return plane.getTransform().getRotation();
 	}
 

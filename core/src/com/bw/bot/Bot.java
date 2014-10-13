@@ -90,6 +90,7 @@ public class Bot {
 		case RIGHT + TOP:
 		case RIGHT + BOTTOM:
 			//eject (move it to default)
+			key = KEY_EJECT;
 			break;
 
 		default:
@@ -108,4 +109,5 @@ public class Bot {
 	public final static int KEY_UP = Keys.W;
 	public final static int KEY_DOWN = Keys.S;
 	public final static int KEY_SHOOT = Keys.SPACE;
+	public final static int KEY_EJECT = Keys.ENTER;
 }

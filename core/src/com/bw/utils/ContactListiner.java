@@ -30,9 +30,9 @@ public class ContactListiner implements ContactListener {
 		if ((contact.getFixtureA().getFilterData().categoryBits == Category.BULLET && contact.getFixtureB().getFilterData().categoryBits == Category.PLANE)
 				|| (contact.getFixtureB().getFilterData().categoryBits == Category.BULLET && contact.getFixtureA().getFilterData().categoryBits == Category.PLANE)) {
 			if (contact.getFixtureA().getFilterData().categoryBits == Category.PLANE) {
-				((PlaneUserData) contact.getFixtureA().getBody().getUserData()).getPlaneActor().killPlane();
+				((PlaneUserData) contact.getFixtureA().getBody().getUserData()).getPlaneActor().prepareToKillPlane();
 			} else if (contact.getFixtureB().getFilterData().categoryBits == Category.PLANE) {
-				((PlaneUserData) contact.getFixtureB().getBody().getUserData()).getPlaneActor().killPlane();
+				((PlaneUserData) contact.getFixtureB().getBody().getUserData()).getPlaneActor().prepareToKillPlane();
 			}
 		}
 		

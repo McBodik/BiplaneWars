@@ -107,7 +107,7 @@ public class PlaneBuilder {
 		Body bullet;
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(plane.getWorldPoint(new Vector2(3.5f, 0)));
+		bodyDef.position.set(plane.getWorldPoint(new Vector2(3.5f, 0))); //TODO fix hardcode
 		bodyDef.fixedRotation = false;
 
 		CircleShape wheel = new CircleShape();

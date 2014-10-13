@@ -67,7 +67,6 @@ public class BotSimple extends Bot {
 		}
 		if ((new Date()).getTime() >= nextActionChange.getTime()){
 			nextActionChange = new Date(new Date().getTime() + (new Random().nextInt(4)) * 1000);
-			System.out.println(nextActionChange);
 			switch (new Random().nextInt(2)) {
 			case 0:
 				key = KEY_UNPRESSED;
