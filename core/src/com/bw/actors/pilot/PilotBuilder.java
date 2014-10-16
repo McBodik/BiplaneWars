@@ -24,7 +24,7 @@ public class PilotBuilder {
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(position);
 		bodyDef.angle = angle;
-		bodyDef.fixedRotation = true;
+		bodyDef.fixedRotation = false;
 		
 		PolygonShape pilotShape = new PolygonShape();
 		pilotShape.setAsBox(SIZE_X / 2, SIZE_Y / 2);

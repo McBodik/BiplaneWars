@@ -39,7 +39,7 @@ public class PlaneController implements InputProcessor {
 	private float temp = 0;
 
 	public void updateMooving() {
-		if (isFall) {
+		if (isFall && isFlying) {
 			if (!lastForceApplyed) {
 				Vector2 force = vectorUtils.getDirectionUnitVector(getCurrentAngle());
 				force.x *= 100;

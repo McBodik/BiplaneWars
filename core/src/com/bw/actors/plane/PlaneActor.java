@@ -1,5 +1,6 @@
 package com.bw.actors.plane;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -10,19 +11,18 @@ import com.bw.utils.VectorUtils;
 
 public class PlaneActor {
 
-
 	World world;
 
-    private short planeStatus;
-    private PlaneBuilder planeBuilder;
-    private PlaneController planeController;
-    private PilotActor pilot;
+	private short planeStatus;
+	private PlaneBuilder planeBuilder;
+	private PlaneController planeController;
+	private PilotActor pilot;
 
-    private final short STATUS_IS_ALIVE = -1;
-    private final short STATUS_PREPARE_TO_KILL = 0;
-    private final short STATUS_KILLED = 1;
-    private final short STATUS_PREPARE_TO_EJECT = 2;
-    private final short STATUS_PILOT_EJECTED = 3;
+	private final short STATUS_IS_ALIVE = -1;
+	private final short STATUS_PREPARE_TO_KILL = 0;
+	private final short STATUS_KILLED = 1;
+	private final short STATUS_PREPARE_TO_EJECT = 2;
+	private final short STATUS_PILOT_EJECTED = 3;
 
 	public PlaneActor(World world, PlaneCharacteristics planeType, Vector2 position) {
 		this.world = world;
@@ -58,38 +58,40 @@ public class PlaneActor {
 
 	public void update() {
 		if (planeStatus == STATUS_PREPARE_TO_KILL) {
-			killingPlane();	
+			killingPlane();
 		}
-		if (planeStatus == STATUS_PREPARE_TO_EJECT){
+		if (planeStatus == STATUS_PREPARE_TO_EJECT) {
 			ejectPilot();
 		}
 		if (planeStatus == STATUS_IS_ALIVE || planeStatus == STATUS_PILOT_EJECTED) {
 			planeController.updateMooving();
+			//TODO out of this class
+			if (pilot.getPilotController() != null)
+				pilot.getPilotController().update();
 		}
 	}
 
 	public void prepareToKillPlane() {
 		planeStatus = STATUS_PREPARE_TO_KILL;
 	}
-	
-	private void killingPlane(){
+
+	private void killingPlane() {
 		planeBuilder.destroyPlane();
 		planeStatus = STATUS_KILLED;
 	}
-	
-	public void prepareToEjectPilot(){
+
+	public void prepareToEjectPilot() {
 		planeStatus = STATUS_PREPARE_TO_EJECT;
 	}
-	
-	private void ejectPilot(){
+
+	private void ejectPilot() {
 		//TODO less speed
 		planeStatus = STATUS_PILOT_EJECTED;
 		Vector2 force = new Vector2(new VectorUtils().getTopDirectionUnitVector(planeBuilder.getPlaneBody().getTransform().getRotation()));
 		force.x *= 50;
 		force.y *= 50;
-		Vector2 position = planeBuilder.getPlaneBody().getPosition();
-		position.y+=2; 
+		Vector2 position = planeBuilder.getPlaneBody().getWorldPoint(new Vector2(0, 2));
 		pilot.ejectPilot(position, planeBuilder.getPlaneBody().getTransform().getRotation(), force);
-		
+		Gdx.input.setInputProcessor(pilot.getPilotController());
 	}
 }
