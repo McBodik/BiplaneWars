@@ -1,10 +1,10 @@
 package com.bw.actors.pilot;
 
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.bw.utils.VectorUtils;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class PilotController implements InputProcessor {
 
@@ -12,6 +12,7 @@ public class PilotController implements InputProcessor {
 	private float currentForce = 0;
 
 	private Body pilot;
+	private Body parachute;
 
 	public PilotController(Body pilot) {
 		this.pilot = pilot;
@@ -89,11 +90,12 @@ public class PilotController implements InputProcessor {
 		return false;
 	}
 
-	private void openParachute(){
+	private void openParachute() {
 		isParachuteOpen = true;
 		pilot.setLinearDamping(PARACHUTE_SPEED);
+		((PilotUserData) pilot.getUserData()).getPilotActor().openParachute();
 	}
-	
+
 	private final static float FORCE = 0.7f;
 	private final static float PARACHUTE_SPEED = 1f;
 }

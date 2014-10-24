@@ -14,6 +14,7 @@ public class PilotActor {
 	
 	public void ejectPilot(Vector2 position, float angle, Vector2 force){
 		pilotBuilder.build(position, angle).getPilot().applyForceToCenter(force, true);
+		pilotBuilder.getPilot().setUserData(new PilotUserData(this));
 	}
 	
 	/** 
@@ -25,6 +26,10 @@ public class PilotActor {
 				pilotController = new PilotController(pilotBuilder.getPilot());
 		}
 		return pilotController;
+	}
+	
+	public void openParachute(){
+		pilotBuilder.createParachute();
 	}
 	
 }
