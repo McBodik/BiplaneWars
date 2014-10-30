@@ -8,9 +8,8 @@ import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class PilotBuilder {
 
@@ -18,6 +17,8 @@ public class PilotBuilder {
 
 	Body pilot;
 	Body parachute;
+	
+	WeldJoint parachuteJoint;
 
 	public PilotBuilder(World world) {
 		this.world = world;
@@ -57,42 +58,32 @@ public class PilotBuilder {
 		return pilot;
 	}
 
-	public void createParachute() {
+	public Body createParachute() {
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(pilot.getWorldPoint(new Vector2(0, 3)));
+		bodyDef.position.set(pilot.getWorldPoint(new Vector2(0, 1.5f)));
 		bodyDef.angle = pilot.getAngle();
 		bodyDef.fixedRotation = false;
 
 		ChainShape parachuteShape = new ChainShape();
-		parachuteShape.createChain(new Vector2[] { new Vector2(-1, 0), new Vector2(1, 0) });
+		parachuteShape.createChain(new Vector2[] { new Vector2(-0.5f, 0), new Vector2(0.5f, 0) });
 
 		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = DENSITY;
-		fixtureDef.friction = FRICTION;
-		fixtureDef.restitution = RESTITUTION;
+		fixtureDef.density = 0;
+		fixtureDef.friction = 0;
+		fixtureDef.restitution = 0;
 		fixtureDef.shape = parachuteShape;
 
 		parachute = world.createBody(bodyDef);
 		parachute.createFixture(fixtureDef);
 
-		//		RevoluteJointDef rjd = new RevoluteJointDef();
-		//		rjd.bodyA = pilot;
-		//		rjd.bodyB = parachute;
-		//		rjd.localAnchorA.set(new Vector2(0, 3));
-		//		rjd.upperAngle = 0.1f;
-		//		rjd.lowerAngle= 0.1f;
-		//		
-		//		
-		//		RevoluteJoint rj = (RevoluteJoint)world.createJoint(rjd);
-
-		DistanceJointDef djd = new DistanceJointDef();
-		djd.bodyA = pilot;
-		djd.bodyB = parachute;
-		djd.localAnchorA.set(new Vector2(0, 3));
-		djd.localAnchorB.set(new Vector2(0, -3));
-		
-		world.createJoint(djd);
+		WeldJointDef wjd = new WeldJointDef();
+		wjd.bodyA = pilot;
+		wjd.bodyB = parachute;
+		wjd.localAnchorA.set(new Vector2(0, 1.5f));
+				
+		parachuteJoint = (WeldJoint)world.createJoint(wjd);
+		return parachute;
 	}
 
 	private static final float DENSITY = 0.1f;
@@ -100,5 +91,5 @@ public class PilotBuilder {
 	private static final float RESTITUTION = 0.5f;
 
 	private static final float SIZE_X = 0.4f;
-	private static final float SIZE_Y = 1.8f;
+	private static final float SIZE_Y = 1.2f;
 }

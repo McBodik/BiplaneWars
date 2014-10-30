@@ -23,6 +23,8 @@ public class PlaneActor {
 	private final short STATUS_KILLED = 1;
 	private final short STATUS_PREPARE_TO_EJECT = 2;
 	private final short STATUS_PILOT_EJECTED = 3;
+	
+	private final short EJECT_FORCE = 20;
 
 	public PlaneActor(World world, PlaneCharacteristics planeType, Vector2 position) {
 		this.world = world;
@@ -88,8 +90,8 @@ public class PlaneActor {
 		//TODO less speed
 		planeStatus = STATUS_PILOT_EJECTED;
 		Vector2 force = new Vector2(new VectorUtils().getTopDirectionUnitVector(planeBuilder.getPlaneBody().getTransform().getRotation()));
-		force.x *= 50;
-		force.y *= 50;
+		force.x *= EJECT_FORCE;
+		force.y *= EJECT_FORCE;
 		Vector2 position = planeBuilder.getPlaneBody().getWorldPoint(new Vector2(0, 2));
 		pilot.ejectPilot(position, planeBuilder.getPlaneBody().getTransform().getRotation(), force);
 		Gdx.input.setInputProcessor(pilot.getPilotController());

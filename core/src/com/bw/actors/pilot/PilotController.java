@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class PilotController implements InputProcessor {
 
@@ -30,11 +29,13 @@ public class PilotController implements InputProcessor {
 			break;
 		case Keys.A:
 			if (isParachuteOpen) {
+				parachute.setTransform(parachute.getTransform().getPosition(), -0.1f);
 				currentForce = -FORCE;
 			}
 			break;
 		case Keys.D:
 			if (isParachuteOpen) {
+				parachute.setTransform(parachute.getTransform().getPosition(), 0.1f);
 				currentForce = FORCE;
 			}
 			break;
@@ -93,9 +94,10 @@ public class PilotController implements InputProcessor {
 	private void openParachute() {
 		isParachuteOpen = true;
 		pilot.setLinearDamping(PARACHUTE_SPEED);
-		((PilotUserData) pilot.getUserData()).getPilotActor().openParachute();
+		parachute = ((PilotUserData) pilot.getUserData()).getPilotActor().openParachute();
+		parachute.setTransform(parachute.getTransform().getPosition(), 0);
 	}
 
-	private final static float FORCE = 0.7f;
+	private final static float FORCE = 4.0f;
 	private final static float PARACHUTE_SPEED = 1f;
 }

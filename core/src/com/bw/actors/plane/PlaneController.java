@@ -45,6 +45,7 @@ public class PlaneController implements InputProcessor {
 				force.x *= 100;
 				force.y *= 100;
 				plane.applyForceToCenter(force, true);
+				lastForceApplyed = true;
 			}
 			Vector2 normalToPlaneDireaction = vectorUtils.getTopDirectionUnitVector(getCurrentAngle());
 			double coefDirection = normalToPlaneDireaction.dot(new Vector2(0, -1)); //1 - same direction, -1 opposite, 0 - perpendicular

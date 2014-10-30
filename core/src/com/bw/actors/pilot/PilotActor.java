@@ -1,6 +1,7 @@
 package com.bw.actors.pilot;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 
 
@@ -28,8 +29,8 @@ public class PilotActor {
 		return pilotController;
 	}
 	
-	public void openParachute(){
-		pilotBuilder.createParachute();
+	public Body openParachute(){
+		return pilotBuilder.createParachute();
 	}
 	
 }
