@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 public class PilotController implements InputProcessor {
 
 	private boolean isParachuteOpen = false;
+	private boolean isParachuteControlled = false;
 	private float currentForce = 0;
 
 	private Body pilot;
@@ -18,25 +19,31 @@ public class PilotController implements InputProcessor {
 	}
 
 	public void update() {
-		pilot.applyForceToCenter(new Vector2(currentForce, 0), true);
+		if (isParachuteOpen) {
+			if (Math.abs(parachute.getAngularVelocity()) > 0 && Math.abs(parachute.getTransform().getRotation()) < 0.1f) {
+				parachute.setAngularVelocity(0);
+				parachute.setTransform(parachute.getTransform().getPosition(), 0f);
+				isParachuteControlled = true;
+			}
+			if (isParachuteControlled) {
+				pilot.applyForceToCenter(new Vector2(currentForce, 0), true);
+			}
+		}
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
 		case Keys.SPACE:
-			openParachute();
+			if (!isParachuteOpen)
+				openParachute();
 			break;
 		case Keys.A:
-			if (isParachuteOpen) {
-				parachute.setTransform(parachute.getTransform().getPosition(), -0.1f);
-				currentForce = -FORCE;
-			}
-			break;
 		case Keys.D:
-			if (isParachuteOpen) {
-				parachute.setTransform(parachute.getTransform().getPosition(), 0.1f);
-				currentForce = FORCE;
+			if (isParachuteOpen && isParachuteControlled) {
+				short sing = keycode == Keys.A ? (short)-1 : 1;
+				parachute.setTransform(parachute.getTransform().getPosition(), sing * PARACHUTE_CONTROL_ANGLE);
+				currentForce = sing * PARACHUTE_CONTROL_SPEED;
 			}
 			break;
 
@@ -48,8 +55,9 @@ public class PilotController implements InputProcessor {
 
 	@Override
 	public boolean keyUp(int keycode) {
-		if (keycode == Keys.A || keycode == Keys.D) {
+		if ((keycode == Keys.A || keycode == Keys.D) && isParachuteOpen && isParachuteControlled) {
 			currentForce = 0;
+			parachute.setTransform(parachute.getTransform().getPosition(), 0);
 		} else
 			return false;
 		return true;
@@ -93,11 +101,21 @@ public class PilotController implements InputProcessor {
 
 	private void openParachute() {
 		isParachuteOpen = true;
-		pilot.setLinearDamping(PARACHUTE_SPEED);
+		pilot.setLinearDamping(PARACHUTE_FALL_DAMPING);
 		parachute = ((PilotUserData) pilot.getUserData()).getPilotActor().openParachute();
-		parachute.setTransform(parachute.getTransform().getPosition(), 0);
+
+		if (Math.sin(pilot.getAngle()) > 0) {
+			parachute.setAngularVelocity(-2);
+		} else {
+			parachute.setAngularVelocity(2);
+		}
+	}
+	
+	public boolean canLand(){
+		return isParachuteControlled && isParachuteOpen;
 	}
 
-	private final static float FORCE = 4.0f;
-	private final static float PARACHUTE_SPEED = 1f;
+	private final static float PARACHUTE_CONTROL_SPEED = 10.0f;
+	private final static float PARACHUTE_FALL_DAMPING = 100.f;
+	private final static float PARACHUTE_CONTROL_ANGLE = 0.2f;
 }

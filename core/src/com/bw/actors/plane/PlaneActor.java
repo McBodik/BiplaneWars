@@ -23,7 +23,7 @@ public class PlaneActor {
 	private final short STATUS_KILLED = 1;
 	private final short STATUS_PREPARE_TO_EJECT = 2;
 	private final short STATUS_PILOT_EJECTED = 3;
-	
+
 	private final short EJECT_FORCE = 20;
 
 	public PlaneActor(World world, PlaneCharacteristics planeType, Vector2 position) {
@@ -69,7 +69,7 @@ public class PlaneActor {
 			planeController.updateMooving();
 			//TODO out of this class
 			if (pilot.getPilotController() != null)
-				pilot.getPilotController().update();
+				pilot.update();
 		}
 	}
 
@@ -95,5 +95,6 @@ public class PlaneActor {
 		Vector2 position = planeBuilder.getPlaneBody().getWorldPoint(new Vector2(0, 2));
 		pilot.ejectPilot(position, planeBuilder.getPlaneBody().getTransform().getRotation(), force);
 		Gdx.input.setInputProcessor(pilot.getPilotController());
+		planeBuilder.getPlaneBody().getFixtureList();
 	}
 }

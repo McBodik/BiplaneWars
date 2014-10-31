@@ -10,15 +10,17 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WeldJoint;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
+import com.bw.utils.Category;
+import com.bw.utils.Mask;
 
 public class PilotBuilder {
 
-	World world;
+	private World world;
 
-	Body pilot;
-	Body parachute;
-	
-	WeldJoint parachuteJoint;
+	private Body pilot;
+	private Body parachute;
+
+	private WeldJoint parachuteJoint;
 
 	public PilotBuilder(World world) {
 		this.world = world;
@@ -39,7 +41,8 @@ public class PilotBuilder {
 		fixtureDef.friction = FRICTION;
 		fixtureDef.restitution = RESTITUTION;
 		fixtureDef.shape = pilotShape;
-		//TODO add filters
+		fixtureDef.filter.categoryBits = Category.PILOT;
+		fixtureDef.filter.maskBits = Mask.PILOT;
 
 		pilot = world.createBody(bodyDef);
 		pilot.createFixture(fixtureDef);
@@ -48,9 +51,10 @@ public class PilotBuilder {
 	}
 
 	public void killPilot() {
+		unhookParachute();
 		if (pilot != null) {
-			pilot = null;
 			world.destroyBody(pilot);
+			pilot = null;
 		}
 	}
 
@@ -81,9 +85,23 @@ public class PilotBuilder {
 		wjd.bodyA = pilot;
 		wjd.bodyB = parachute;
 		wjd.localAnchorA.set(new Vector2(0, 1.5f));
-				
-		parachuteJoint = (WeldJoint)world.createJoint(wjd);
+
+		parachuteJoint = (WeldJoint) world.createJoint(wjd);
+
 		return parachute;
+	}
+
+	public void unhookParachute() {
+		if (parachuteJoint != null) {
+			world.destroyJoint(parachuteJoint);
+			parachuteJoint = null;
+		}
+		if (parachute != null) {
+			world.destroyBody(parachute);
+			parachute = null;
+		}
+		pilot.setTransform(pilot.getPosition(), 0);
+		pilot.setFixedRotation(true);
 	}
 
 	private static final float DENSITY = 0.1f;
